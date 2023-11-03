@@ -1,3 +1,5 @@
+#!/bin/bash
+
 PROJECT_ID="id"
 DOCKER_IMAGE_NAME="gcp-petclinic"
 

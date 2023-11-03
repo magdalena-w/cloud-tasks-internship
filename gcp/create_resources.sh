@@ -2,6 +2,8 @@ PROJECT_ID="id"
 REGION="us-central1"
 ZONE="us-central1-a"
 DOCKER_IMAGE_NAME="gcp-petclinic"
+PRINCIPAL="serviceAccount:accesstogcr@$PROJECT_ID.iam.gserviceaccount.com"
+ROLE="artifactregistry.reader"
 
 # Create a VPC network and subnet
 gcloud compute networks create my-vpc --project=$PROJECT_ID --subnet-mode=custom --bgp-routing-mode=regional
@@ -20,10 +22,17 @@ gcloud compute firewall-rules create allow-ssh --project=$PROJECT_ID --direction
 gcloud compute firewall-rules create allow-docker --project=$PROJECT_ID --direction=INGRESS --priority=1000 --network=my-vpc --action=ALLOW --rules=tcp:8080 --source-ranges=0.0.0.0/0
 
 # Tag your Docker image with the GCR URL
-docker tag petclinic gcr.io/$PROJECT_ID/my-gcr-repo/$DOCKER_IMAGE_NAME
+docker tag spring-petclinic gcr.io/$PROJECT_ID/my-gcr-repo/$DOCKER_IMAGE_NAME
 
 # Authenticate Docker with GCR
 gcloud auth configure-docker
 
 # Push the image to GCR
 docker push gcr.io/$PROJECT_ID/my-gcr-repo/$DOCKER_IMAGE_NAME
+
+# Add service account
+
+# Add policy binding
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+   --member=$PRINCPAL \
+   --role=$ROLE
